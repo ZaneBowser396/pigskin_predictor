@@ -89,7 +89,6 @@ def generate_picks(
         )
 
     if first_game_team is not None:
-        games = games.with_row_index("kickoff_order")
         first_game = games.filter(
             (pl.col("home_team") == first_game_team)
             | (pl.col("away_team") == first_game_team)
@@ -101,11 +100,14 @@ def generate_picks(
                 "Use the nflverse team abbreviation, such as TB."
             )
 
-        first_kickoff_order = first_game["kickoff_order"][0]
-        games = (
-            games
-            .filter(pl.col("kickoff_order") >= first_kickoff_order)
-            .drop("kickoff_order")
+        first_gameday = first_game["gameday"][0]
+        first_gametime = first_game["gametime"][0]
+        games = games.filter(
+            (pl.col("gameday") > first_gameday)
+            | (
+                (pl.col("gameday") == first_gameday)
+                & (pl.col("gametime") >= first_gametime)
+            )
         )
 
     missing_odds = games.filter(
