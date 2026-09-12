@@ -10,6 +10,7 @@ Run from the repository root:
 Outputs:
     outputs/ablation_overall.csv
     outputs/ablation_by_season.csv
+    outputs/ablation_by_week.csv
 """
 
 from __future__ import annotations
@@ -156,6 +157,65 @@ def metrics(
     }
 
 
+def weekly_metrics(
+    frame: pl.DataFrame,
+    model_name: str,
+    probability_column: str,
+) -> pl.DataFrame:
+    """Keep paired weekly results for the uncertainty test in model 10."""
+    probability = pl.col(probability_column).clip(1e-15, 1 - 1e-15)
+
+    return (
+        frame
+        .with_columns(
+            (
+                (pl.col(probability_column) - pl.col("home_win")) ** 2
+            ).alias("brier_value"),
+            (
+                -(
+                    pl.col("home_win") * probability.log()
+                    + (1 - pl.col("home_win"))
+                    * (1 - probability).log()
+                )
+            ).alias("log_loss_value"),
+        )
+        .group_by(["season", "week"])
+        .agg(
+            pl.len().alias("games"),
+            pl.col("correct").sum().alias("correct_picks"),
+            pl.col("points").sum().alias("points"),
+            pl.col("weight").sum().alias("max_points"),
+            pl.col("brier_value").mean().alias("brier_score"),
+            pl.col("log_loss_value").mean().alias("log_loss"),
+        )
+        .with_columns(
+            pl.lit(model_name).alias("model"),
+            (pl.col("correct_picks") / pl.col("games") * 100)
+            .round(2)
+            .alias("accuracy"),
+            (pl.col("points") / pl.col("max_points") * 100)
+            .round(2)
+            .alias("confidence_points"),
+            pl.col("brier_score").round(5),
+            pl.col("log_loss").round(5),
+        )
+        .select(
+            "model",
+            "season",
+            "week",
+            "games",
+            "correct_picks",
+            "points",
+            "max_points",
+            "accuracy",
+            "confidence_points",
+            "brier_score",
+            "log_loss",
+        )
+        .sort(["season", "week"])
+    )
+
+
 # ==================================================
 # BUILD PRE-GAME FEATURES
 # ==================================================
@@ -269,9 +329,12 @@ def build_feature_data() -> pl.DataFrame:
 # WALK-FORWARD ABLATION
 # ==================================================
 
-def run_ablation(data: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
+def run_ablation(
+    data: pl.DataFrame,
+) -> tuple[pl.DataFrame, pl.DataFrame, pl.DataFrame]:
     overall_rows: list[dict] = []
     season_rows: list[dict] = []
+    weekly_frames: list[pl.DataFrame] = []
 
     test_data = data.filter(
         pl.col("season").is_between(TEST_START, TEST_END)
@@ -288,6 +351,13 @@ def run_ablation(data: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
             "Market baseline",
             "market_home_probability",
             "Overall",
+        )
+    )
+    weekly_frames.append(
+        weekly_metrics(
+            market_scored,
+            "Market baseline",
+            "market_home_probability",
         )
     )
 
@@ -333,6 +403,13 @@ def run_ablation(data: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
                 probability_column,
             )
             predictions.append(scored)
+            weekly_frames.append(
+                weekly_metrics(
+                    scored,
+                    model_name,
+                    probability_column,
+                )
+            )
             season_rows.append(
                 metrics(
                     scored,
@@ -361,7 +438,8 @@ def run_ablation(data: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
         .with_row_index("points_rank", offset=1)
     )
     by_season = pl.DataFrame(season_rows).sort(["season", "model"])
-    return overall, by_season
+    by_week = pl.concat(weekly_frames).sort(["season", "week", "model"])
+    return overall, by_season, by_week
 
 
 def main() -> None:
@@ -369,16 +447,18 @@ def main() -> None:
     data = build_feature_data()
 
     print("Running 15 feature combinations with walk-forward validation...")
-    overall, by_season = run_ablation(data)
+    overall, by_season, by_week = run_ablation(data)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     overall.write_csv(OUTPUT_DIR / "ablation_overall.csv")
     by_season.write_csv(OUTPUT_DIR / "ablation_by_season.csv")
+    by_week.write_csv(OUTPUT_DIR / "ablation_by_week.csv")
 
     print("\nABLATION RESULTS — RANKED BY CONFIDENCE POINTS")
     print(overall)
     print("\nSaved outputs/ablation_overall.csv")
     print("Saved outputs/ablation_by_season.csv")
+    print("Saved outputs/ablation_by_week.csv")
 
 
 if __name__ == "__main__":
