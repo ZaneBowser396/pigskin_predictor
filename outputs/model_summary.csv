@@ -1,0 +1,5 @@
+strategy,accuracy,confidence_points
+Market,66.49,72.15
+Full model,66.42,71.98
+Market + ELO,66.30,72.60
+

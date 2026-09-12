@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Fourth & Data — data-driven NFL confidence pool picks and model tracking." />
+    <meta name="theme-color" content="#07140f" />
+    <title>Fourth & Data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="nav-shell">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="#top" aria-label="Fourth and Data home">
+          <span class="brand-mark">4D</span>
+          <span>FOURTH <i>&amp;</i> DATA</span>
+        </a>
+        <div class="nav-links">
+          <a href="#results">Results</a>
+          <a href="#picks">Picks</a>
+          <a href="#method">Method</a>
+        </div>
+        <a class="nav-cta" id="repo-link" href="https://github.com/" target="_blank" rel="noreferrer">View repo <span>↗</span></a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section-wrap">
+        <div class="eyebrow"><span class="live-dot"></span> Model lab · 2026 season</div>
+        <h1>Gut feel is benched.<br /><em>Data makes the pick.</em></h1>
+        <p class="hero-copy">An NFL confidence-pool engine that predicts every matchup, ranks every pick and keeps an honest score against the market.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#results">See the numbers <span>↓</span></a>
+          <a class="button secondary" href="#method">How it works</a>
+        </div>
+        <div class="yard-lines" aria-hidden="true">
+          <span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>40</span><span>30</span><span>20</span><span>10</span>
+        </div>
+      </section>
+
+      <section class="ticker" aria-label="Project highlights">
+        <div class="ticker-track">
+          <span>NO HOT TAKES</span><b>◆</b><span>WALK-FORWARD TESTED</span><b>◆</b><span>MARKET BENCHMARKED</span><b>◆</b><span>CONFIDENCE OPTIMISED</span><b>◆</b><span>NO HOT TAKES</span><b>◆</b><span>WALK-FORWARD TESTED</span>
+        </div>
+      </section>
+
+      <section id="results" class="section-wrap section-block">
+        <div class="section-heading">
+          <div><span class="kicker">01 / SCOREBOARD</span><h2>The model versus reality.</h2></div>
+          <p>Out-of-sample results only. No victory laps over training data.</p>
+        </div>
+
+        <div class="metric-grid" id="metric-grid"></div>
+
+        <div class="results-grid">
+          <article class="panel chart-panel">
+            <div class="panel-head">
+              <div><span class="overline">CONFIDENCE POINTS</span><h3>Strategy comparison</h3></div>
+              <span class="tag">BACKTEST</span>
+            </div>
+            <div id="strategy-chart" class="bar-chart" role="img" aria-label="Confidence points comparison chart"></div>
+          </article>
+          <article class="panel insight-panel">
+            <div>
+              <span class="overline">WHAT WE LEARNED</span>
+              <h3>Complexity hasn't earned the jersey. <em>Yet.</em></h3>
+              <p>The full walk-forward model trails the simple market baseline. A market-heavy ELO blend is the strongest lead, so the next job is testing which features add signal—and cutting everything that doesn't.</p>
+            </div>
+            <div class="next-test"><span>NEXT TEST</span><strong>Feature ablation</strong><b>→</b></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="picks" class="picks-section">
+        <div class="section-wrap section-block">
+          <div class="section-heading light">
+            <div><span class="kicker">02 / WEEKLY BOARD</span><h2>Picks, ranked by conviction.</h2></div>
+            <p>Each confidence number is used once. The strongest edge gets the biggest weight.</p>
+          </div>
+          <div class="week-toolbar">
+            <div><span class="overline">CURRENT SLATE</span><strong id="week-label">Awaiting 2026 schedule</strong></div>
+            <span class="status-pill" id="picks-status">COMING SOON</span>
+          </div>
+          <div class="picks-table-wrap">
+            <table class="picks-table">
+              <thead><tr><th>Rank</th><th>Pick</th><th>Opponent</th><th>Win probability</th><th>Confidence</th></tr></thead>
+              <tbody id="picks-body"></tbody>
+            </table>
+          </div>
+          <p class="empty-note" id="empty-note">Weekly picks will appear here once the model is connected to the current schedule.</p>
+        </div>
+      </section>
+
+      <section id="method" class="section-wrap section-block">
+        <div class="section-heading">
+          <div><span class="kicker">03 / THE PLAYBOOK</span><h2>From market odds to one ranked card.</h2></div>
+          <p>The system is designed to be tested, explained and improved—not treated like a black box.</p>
+        </div>
+        <div class="steps" id="method-steps"></div>
+      </section>
+
+      <section class="section-wrap closing">
+        <div>
+          <span class="kicker">THE HONEST VERSION</span>
+          <h2>Building in public.<br />Keeping score properly.</h2>
+        </div>
+        <p>A learning project by Zane Bowser. The aim is not to pretend football is predictable—it is to find out which small edges survive contact with a new season.</p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="section-wrap footer-inner"><span>FOURTH &amp; DATA © <span id="year"></span></span><span>SPORTS ANALYTICS · NOT BETTING ADVICE</span></div>
+    </footer>
+    <script src="data/dashboard-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
