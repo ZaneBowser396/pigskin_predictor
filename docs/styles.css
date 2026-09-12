@@ -88,6 +88,31 @@ h1 em { color: transparent; font-style: normal; -webkit-text-stroke: 2px var(--i
 .confidence-bar { width: 120px; height: 6px; background: #2b4035; }
 .confidence-bar i { display: block; height: 100%; background: var(--green); }
 .empty-note { margin-top: 16px; color: #8d9e94; font-size: .78rem; }
+.bet-status { display: inline-flex; padding: 6px 9px; border: 1px solid #4a5e52; border-radius: 100px; color: #b8c5bc; font: .58rem DM Mono, monospace; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+.bet-status.win, .bet-status.settled { color: var(--green); border-color: var(--green); }
+.bet-status.loss { color: #ff9170; border-color: #ff9170; }
+.betting-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 18px; border: 1px solid var(--line); background: var(--cream); }
+.betting-metric { min-height: 165px; padding: 25px; border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+.betting-metric:last-child { border-right: 0; }
+.betting-metric span { color: var(--muted); font: .62rem DM Mono, monospace; letter-spacing: .07em; text-transform: uppercase; }
+.betting-metric strong { margin-top: 21px; font-size: 2.25rem; letter-spacing: -.05em; }
+.betting-metric small { margin-top: auto; color: var(--muted); font-size: .68rem; }
+.betting-grid { grid-template-columns: 1.45fr .75fr; }
+.profit-chart { height: 300px; margin-top: 28px; }
+.profit-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.profit-chart .zero-line { stroke: #bbbdb6; stroke-width: 1; stroke-dasharray: 5 5; }
+.profit-chart .profit-line { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.profit-chart circle { fill: var(--green); stroke: var(--ink); stroke-width: 2; }
+.profit-chart text { fill: var(--muted); font: 10px DM Mono, monospace; }
+.chart-empty { height: 100%; display: grid; place-content: center; gap: 8px; text-align: center; color: var(--muted); }
+.chart-empty strong { color: var(--ink); font-size: 1rem; }
+.chart-empty span { font-size: .76rem; }
+.betting-note { display: flex; flex-direction: column; background: var(--green); }
+.betting-note h3 { margin-top: 25px; font-size: 2rem; line-height: 1.08; letter-spacing: -.04em; }
+.betting-note p { color: #30401b; font-size: .86rem; line-height: 1.7; }
+.paper-only { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(7,20,15,.25); display: flex; flex-direction: column; gap: 5px; }
+.paper-only span { font: .6rem DM Mono, monospace; letter-spacing: .07em; }
+.paper-only strong { font-size: .8rem; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .step { padding: 33px 24px 35px 0; border-right: 1px solid var(--line); }
 .step:not(:first-child) { padding-left: 24px; }
@@ -105,6 +130,10 @@ footer { color: #8fa096; background: var(--ink); }
   .hero { min-height: 650px; padding-top: 90px; }
   .section-heading, .closing { align-items: start; flex-direction: column; }
   .metric-grid, .results-grid { grid-template-columns: 1fr; }
+  .betting-metric-grid { grid-template-columns: 1fr 1fr; }
+  .betting-metric:nth-child(2) { border-right: 0; }
+  .betting-metric { border-bottom: 1px solid var(--line); }
+  .betting-metric:nth-child(n+3) { border-bottom: 0; }
   .metric { border-right: 0; border-bottom: 1px solid var(--line); }
   .metric:last-child { border-bottom: 0; }
   .steps { grid-template-columns: 1fr 1fr; }
@@ -122,9 +151,11 @@ footer { color: #8fa096; background: var(--ink); }
   .button { justify-content: space-between; }
   .section-block { padding-block: 75px; }
   .steps { grid-template-columns: 1fr; }
+  .betting-metric-grid { grid-template-columns: 1fr; }
+  .betting-metric, .betting-metric:nth-child(n) { border-right: 0; border-bottom: 1px solid var(--line); }
+  .betting-metric:last-child { border-bottom: 0; }
   .step, .step:not(:first-child) { padding: 25px 0; border-right: 0; }
   .step h3 { margin-top: 20px; }
   .closing { padding: 35px 25px; }
   .footer-inner { gap: 15px; align-items: start; flex-direction: column; justify-content: center; }
 }
-
