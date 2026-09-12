@@ -42,7 +42,10 @@ LEDGER_COLUMNS = [
     "opponent",
     "probability",
     "odds",
+    "decimal_price",
     "stake",
+    "potential_return",
+    "potential_profit",
     "recorded_at_utc",
     "status",
     "winner",
@@ -92,7 +95,10 @@ def empty_ledger() -> pl.DataFrame:
             "opponent": pl.String,
             "probability": pl.Float64,
             "odds": pl.Float64,
+            "decimal_price": pl.Float64,
             "stake": pl.Float64,
+            "potential_return": pl.Float64,
+            "potential_profit": pl.Float64,
             "recorded_at_utc": pl.String,
             "status": pl.String,
             "winner": pl.String,
@@ -106,12 +112,26 @@ def empty_ledger() -> pl.DataFrame:
 def load_ledger() -> pl.DataFrame:
     if not LEDGER_FILE.exists():
         return empty_ledger()
-    # Columns containing only blank pending values can otherwise be inferred
-    # as strings. Enforce the stable ledger schema before appending new bets.
-    return pl.read_csv(
-        LEDGER_FILE,
-        schema_overrides=empty_ledger().schema,
-    ).select(LEDGER_COLUMNS)
+    # Enforce stable types and add any columns introduced after an older ledger
+    # was created. This keeps existing paper-bet history compatible.
+    ledger = pl.read_csv(LEDGER_FILE)
+    target_schema = empty_ledger().schema
+
+    ledger = ledger.with_columns([
+        pl.col(column).cast(dtype, strict=False)
+        for column, dtype in target_schema.items()
+        if column in ledger.columns
+    ])
+
+    missing_columns = [
+        pl.lit(None, dtype=dtype).alias(column)
+        for column, dtype in target_schema.items()
+        if column not in ledger.columns
+    ]
+    if missing_columns:
+        ledger = ledger.with_columns(missing_columns)
+
+    return ledger.select(LEDGER_COLUMNS)
 
 
 def matchup_id(
@@ -133,7 +153,7 @@ def record_picks(stake: float) -> pl.DataFrame:
     picks = pl.read_csv(PICKS_FILE)
     required = {
         "season", "week_number", "week", "rank", "pick",
-        "opponent", "probability", "odds",
+        "opponent", "probability", "odds", "decimal_price",
     }
     missing = required - set(picks.columns)
     if missing:
@@ -162,7 +182,16 @@ def record_picks(stake: float) -> pl.DataFrame:
             "opponent": pick["opponent"],
             "probability": float(pick["probability"]),
             "odds": float(pick["odds"]),
+            "decimal_price": float(pick["decimal_price"]),
             "stake": float(stake),
+            "potential_return": round(
+                float(stake) * float(pick["decimal_price"]),
+                2,
+            ),
+            "potential_profit": round(
+                float(stake) * (float(pick["decimal_price"]) - 1),
+                2,
+            ),
             "recorded_at_utc": recorded_at,
             "status": "Pending",
             "winner": None,
@@ -365,8 +394,9 @@ def main() -> None:
         print("\nPAPER-BET LEDGER")
         print(
             ledger.select(
-                "week", "rank", "pick", "opponent", "odds",
-                "stake", "status", "result", "net_profit",
+                "week", "rank", "pick", "opponent", "decimal_price",
+                "stake", "potential_return", "potential_profit",
+                "status", "result", "net_profit",
             )
         )
 
