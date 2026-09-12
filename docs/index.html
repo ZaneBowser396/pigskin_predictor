@@ -22,6 +22,7 @@
         <div class="nav-links">
           <a href="#results">Results</a>
           <a href="#picks">Picks</a>
+          <a href="#betting">Paper bets</a>
           <a href="#method">Method</a>
         </div>
         <a class="nav-cta" id="repo-link" href="https://github.com/" target="_blank" rel="noreferrer">View repo <span>↗</span></a>
@@ -87,7 +88,7 @@
           </div>
           <div class="picks-table-wrap">
             <table class="picks-table">
-              <thead><tr><th>Rank</th><th>Pick</th><th>Opponent</th><th>Win probability</th><th>Confidence</th></tr></thead>
+              <thead><tr><th>Weight</th><th>Pick</th><th>Opponent</th><th>Win probability</th><th>Price</th><th>Paper stake</th><th>Potential return</th><th>Status</th></tr></thead>
               <tbody id="picks-body"></tbody>
             </table>
           </div>
@@ -95,9 +96,32 @@
         </div>
       </section>
 
+      <section id="betting" class="section-wrap section-block">
+        <div class="section-heading">
+          <div><span class="kicker">03 / PAPER BANKROLL</span><h2>Every pick. Every price. No hiding.</h2></div>
+          <p>A fixed-stake simulation that records the price available when the card is generated and settles against the actual result.</p>
+        </div>
+        <div class="betting-metric-grid" id="betting-metrics"></div>
+        <div class="results-grid betting-grid">
+          <article class="panel chart-panel">
+            <div class="panel-head">
+              <div><span class="overline">CUMULATIVE NET PROFIT</span><h3>Paper P/L over time</h3></div>
+              <span class="tag">$1,000 FLAT STAKE</span>
+            </div>
+            <div id="profit-chart" class="profit-chart" role="img" aria-label="Cumulative paper betting profit chart"></div>
+          </article>
+          <article class="panel betting-note">
+            <span class="overline">WHY TRACK THIS?</span>
+            <h3>Picking winners and making money are different problems.</h3>
+            <p>Favourites win more often, but their shorter prices mean the card can still lose money. This ledger keeps accuracy separate from return on stake.</p>
+            <div class="paper-only"><span>SIMULATION ONLY</span><strong>No real bets are placed.</strong></div>
+          </article>
+        </div>
+      </section>
+
       <section id="method" class="section-wrap section-block">
         <div class="section-heading">
-          <div><span class="kicker">03 / THE PLAYBOOK</span><h2>From market odds to one ranked card.</h2></div>
+          <div><span class="kicker">04 / THE PLAYBOOK</span><h2>From market odds to one ranked card.</h2></div>
           <p>The system is designed to be tested, explained and improved—not treated like a black box.</p>
         </div>
         <div class="steps" id="method-steps"></div>
