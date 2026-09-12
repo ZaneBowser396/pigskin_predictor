@@ -1,4 +1,4 @@
-# Fourth & Data
+# Pigskin Predictor
 
 > Data-driven NFL confidence-pool picks, probability modelling, calibration and weekly confidence optimisation.
 
@@ -6,7 +6,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Status](https://img.shields.io/badge/status-building-f4b942?style=for-the-badge)](#roadmap)
 
-Fourth & Data is a statistics-first NFL tipping system built for a weekly confidence pool. It predicts every game, ranks each pick from least to most confident, and tracks whether the model actually improves on the betting market.
+The Pigskin Predictor is a statistics-first NFL tipping system built for a weekly confidence pool. It predicts every game, ranks each pick from least to most confident, and tracks whether the model actually improves on the betting market.
 
 ## The scoreboard so far
 
