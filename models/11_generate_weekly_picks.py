@@ -4,7 +4,7 @@ The raw, no-vig betting market is the official baseline because no challenger
 in the walk-forward bootstrap test showed a statistically reliable improvement.
 
 Example:
-    python models/11_generate_weekly_picks.py --season 2026 --week 2
+    python models/11_generate_weekly_picks.py --season 2026 --week 1 --first-game TB
 
 Output:
     outputs/weekly_picks.csv
@@ -46,6 +46,16 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Regular-season week to generate.",
     )
+    parser.add_argument(
+        "--first-game",
+        type=str.upper,
+        default=None,
+        metavar="TEAM",
+        help=(
+            "Only include this team's matchup and games kicking off later "
+            "(for example: --first-game TB)."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -58,7 +68,11 @@ def moneyline_probability(column: str) -> pl.Expr:
     )
 
 
-def generate_picks(season: int, week: int) -> pl.DataFrame:
+def generate_picks(
+    season: int,
+    week: int,
+    first_game_team: str | None = None,
+) -> pl.DataFrame:
     schedule = nfl.load_schedules([season])
     games = (
         schedule
@@ -72,6 +86,26 @@ def generate_picks(season: int, week: int) -> pl.DataFrame:
     if games.is_empty():
         raise ValueError(
             f"No regular-season games were found for {season} Week {week}."
+        )
+
+    if first_game_team is not None:
+        games = games.with_row_index("kickoff_order")
+        first_game = games.filter(
+            (pl.col("home_team") == first_game_team)
+            | (pl.col("away_team") == first_game_team)
+        )
+
+        if first_game.is_empty():
+            raise ValueError(
+                f"{first_game_team} was not found in {season} Week {week}. "
+                "Use the nflverse team abbreviation, such as TB."
+            )
+
+        first_kickoff_order = first_game["kickoff_order"][0]
+        games = (
+            games
+            .filter(pl.col("kickoff_order") >= first_kickoff_order)
+            .drop("kickoff_order")
         )
 
     missing_odds = games.filter(
@@ -151,7 +185,11 @@ def generate_picks(season: int, week: int) -> pl.DataFrame:
 
 def main() -> None:
     args = parse_args()
-    picks = generate_picks(args.season, args.week)
+    picks = generate_picks(
+        args.season,
+        args.week,
+        args.first_game,
+    )
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     picks.write_csv(OUTPUT)
