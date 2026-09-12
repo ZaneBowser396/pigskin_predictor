@@ -106,7 +106,12 @@ def empty_ledger() -> pl.DataFrame:
 def load_ledger() -> pl.DataFrame:
     if not LEDGER_FILE.exists():
         return empty_ledger()
-    return pl.read_csv(LEDGER_FILE)
+    # Columns containing only blank pending values can otherwise be inferred
+    # as strings. Enforce the stable ledger schema before appending new bets.
+    return pl.read_csv(
+        LEDGER_FILE,
+        schema_overrides=empty_ledger().schema,
+    ).select(LEDGER_COLUMNS)
 
 
 def matchup_id(
