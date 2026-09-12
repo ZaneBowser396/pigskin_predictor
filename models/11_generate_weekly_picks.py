@@ -158,6 +158,10 @@ def generate_picks(
         .alias("opponent"),
         pl.max_horizontal("home_probability", "away_probability")
         .alias("pick_probability"),
+        pl.when(pl.col("home_probability") >= pl.col("away_probability"))
+        .then(pl.col("home_moneyline"))
+        .otherwise(pl.col("away_moneyline"))
+        .alias("pick_odds"),
     )
 
     # Lowest win probability receives weight 1; highest receives weight N.
@@ -170,10 +174,13 @@ def generate_picks(
             .alias("rank")
         )
         .select(
+            pl.lit(season).alias("season"),
+            pl.lit(week).alias("week_number"),
             pl.lit(f"{season} Week {week}").alias("week"),
             "rank",
             "pick",
             "opponent",
+            pl.col("pick_odds").alias("odds"),
             (pl.col("pick_probability") * 100)
             .round(2)
             .alias("probability"),
