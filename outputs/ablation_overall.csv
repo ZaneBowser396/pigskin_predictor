@@ -1,0 +1,17 @@
+points_rank,model,season,games,accuracy,confidence_points,brier_score,log_loss
+1,Market,Overall,1355,67.01,72.28,0.21201,0.6122
+2,Market + Rest,Overall,1355,66.79,72.19,0.2122,0.61267
+3,Market + ELO,Overall,1355,67.01,72.18,0.21228,0.61283
+4,Market + ELO + Rest,Overall,1355,67.08,72.16,0.21244,0.61326
+5,Market baseline,Overall,1355,66.49,72.15,0.21174,0.61086
+6,Market + Recent form + Rest,Overall,1355,66.57,72.09,0.21237,0.61318
+7,Market + Recent form,Overall,1355,66.64,72.07,0.2122,0.61273
+8,Market + ELO + Recent form,Overall,1355,66.64,72.04,0.21246,0.61337
+9,Market + ELO + Recent form + Rest,Overall,1355,66.42,71.98,0.21262,0.61378
+10,ELO + Recent form + Rest,Overall,1355,64.06,67.59,0.22701,0.64608
+11,ELO + Recent form,Overall,1355,63.99,67.56,0.22697,0.64613
+12,ELO,Overall,1355,63.99,67.31,0.22786,0.64826
+13,ELO + Rest,Overall,1355,63.62,67.19,0.22789,0.64821
+14,Recent form + Rest,Overall,1355,59.85,63.72,0.23641,0.66585
+15,Recent form,Overall,1355,59.85,63.64,0.23645,0.66595
+16,Rest,Overall,1355,54.1,54.63,0.24836,0.68986
