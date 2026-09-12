@@ -164,6 +164,14 @@ def generate_picks(
         .alias("pick_odds"),
     )
 
+    games = games.with_columns(
+        pl.when(pl.col("pick_odds") < 0)
+        .then(1 + 100 / -pl.col("pick_odds"))
+        .otherwise(1 + pl.col("pick_odds") / 100)
+        .round(3)
+        .alias("decimal_price")
+    )
+
     # Lowest win probability receives weight 1; highest receives weight N.
     return (
         games
@@ -181,6 +189,7 @@ def generate_picks(
             "pick",
             "opponent",
             pl.col("pick_odds").alias("odds"),
+            "decimal_price",
             (pl.col("pick_probability") * 100)
             .round(2)
             .alias("probability"),
