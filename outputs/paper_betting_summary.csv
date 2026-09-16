@@ -1,2 +1,2 @@
-period,bets,total_staked,net_profit,roi
-Overall,0,0.0,0.0,0.0
+period,bets,wins,losses,pushes,win_rate,total_staked,gross_return,net_profit,roi
+Overall,14,11,3,0,78.57,14000.0,16864.28,2864.28,20.46
