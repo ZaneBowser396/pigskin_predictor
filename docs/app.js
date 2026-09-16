@@ -17,6 +17,20 @@ const money = value => new Intl.NumberFormat("en-AU", {
   maximumFractionDigits: 0,
 }).format(Number(value || 0));
 
+const seasonMetricValue = metric => {
+  if (metric.format === "percent") return format(metric.value);
+  if (metric.format === "money") return money(metric.value);
+  return Number(metric.value || 0).toLocaleString("en-AU");
+};
+
+const animateBars = () => {
+  requestAnimationFrame(() => {
+    document.querySelectorAll(".bar-fill").forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  });
+};
+
 document.querySelector("#metric-grid").innerHTML = data.metrics.map((metric, index) => `
   <article class="metric ${index === 2 ? "highlight" : ""}">
     <span class="label">${metric.label}</span>
@@ -26,22 +40,22 @@ document.querySelector("#metric-grid").innerHTML = data.metrics.map((metric, ind
 `).join("");
 
 const chart = document.querySelector("#strategy-chart");
-const min = Math.min(...data.strategies.map(item => item.points)) - 1;
-const max = Math.max(...data.strategies.map(item => item.points)) + 0.2;
-const best = Math.max(...data.strategies.map(item => item.points));
-chart.innerHTML = data.strategies.map(strategy => {
-  const width = Math.max(8, ((strategy.points - min) / (max - min)) * 100);
-  return `
-    <div class="bar-row ${strategy.points === best ? "best" : ""}">
-      <span>${strategy.name}</span>
-      <div class="bar-track"><div class="bar-fill" data-width="${width}%"></div></div>
-      <strong class="bar-value">${format(strategy.points)}</strong>
-    </div>`;
-}).join("");
-
-requestAnimationFrame(() => {
-  document.querySelectorAll(".bar-fill").forEach(bar => { bar.style.width = bar.dataset.width; });
-});
+if (data.strategies.length) {
+  const min = Math.min(...data.strategies.map(item => item.points)) - 1;
+  const max = Math.max(...data.strategies.map(item => item.points)) + 0.2;
+  const best = Math.max(...data.strategies.map(item => item.points));
+  chart.innerHTML = data.strategies.map(strategy => {
+    const width = Math.max(8, ((strategy.points - min) / (max - min)) * 100);
+    return `
+      <div class="bar-row ${strategy.points === best ? "best" : ""}">
+        <span>${strategy.name}</span>
+        <div class="bar-track"><div class="bar-fill" data-width="${width}%"></div></div>
+        <strong class="bar-value">${format(strategy.points)}</strong>
+      </div>`;
+  }).join("");
+} else {
+  chart.innerHTML = `<div class="chart-empty"><strong>Awaiting backtest data</strong><span>Run the model summary workflow to populate this comparison.</span></div>`;
+}
 
 document.querySelector("#method-steps").innerHTML = data.method.map((step, index) => `
   <article class="step">
@@ -70,6 +84,59 @@ if (data.picks.length) {
   `).join("");
 } else {
   picksBody.innerHTML = `<tr><td>—</td><td><strong>Schedule pending</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
+}
+
+const season = data.confidence_pool || { season: null, metrics: [], weekly: [] };
+const seasonLabel = document.querySelector("#season-label");
+seasonLabel.textContent = season.season ? `${season.season} SEASON` : "SEASON TRACKER";
+
+const seasonMetrics = document.querySelector("#season-metrics");
+if (season.metrics.length) {
+  seasonMetrics.innerHTML = season.metrics.map(metric => `
+    <article class="betting-metric">
+      <span>${metric.label}</span>
+      <strong>${seasonMetricValue(metric)}</strong>
+      <small>${metric.detail}</small>
+    </article>
+  `).join("");
+} else {
+  seasonMetrics.innerHTML = `
+    <article class="betting-metric">
+      <span>Season tracker</span>
+      <strong>—</strong>
+      <small>Record and settle the first confidence card to begin.</small>
+    </article>`;
+}
+
+const seasonChart = document.querySelector("#season-chart");
+const seasonSummaryCopy = document.querySelector("#season-summary-copy");
+const seasonLatestWeek = document.querySelector("#season-latest-week");
+
+if (!season.weekly.length) {
+  seasonChart.innerHTML = `<div class="chart-empty"><strong>Awaiting settled confidence picks</strong><span>Week-by-week points performance will appear here.</span></div>`;
+  seasonSummaryCopy.textContent = "The live ledger will track every straight-up pick, its assigned confidence weight and the points earned once the result is final.";
+  seasonLatestWeek.textContent = "No settled week yet";
+} else {
+  const bestWeek = Math.max(...season.weekly.map(week => Number(week.points_percent)));
+  seasonChart.innerHTML = season.weekly.map(week => `
+    <div class="bar-row ${Number(week.points_percent) === bestWeek ? "best" : ""}">
+      <span>Week ${week.week_number}</span>
+      <div class="bar-track"><div class="bar-fill" data-width="${Math.max(8, Number(week.points_percent))}%"></div></div>
+      <strong class="bar-value">${format(week.points_percent)}</strong>
+    </div>
+  `).join("");
+
+  const latest = season.weekly.at(-1);
+  const totals = season.metrics.reduce((lookup, metric) => {
+    lookup[metric.label] = metric;
+    return lookup;
+  }, {});
+  const accuracy = totals["Pick accuracy"]?.value ?? 0;
+  const points = totals["Confidence points"]?.value ?? 0;
+  const pointsPercent = totals["Points percentage"]?.value ?? 0;
+
+  seasonSummaryCopy.textContent = `Through ${season.weekly.length} settled week${season.weekly.length === 1 ? "" : "s"}, the card is hitting ${format(accuracy)} of picks and has banked ${Number(points).toLocaleString("en-AU")} confidence points at ${format(pointsPercent)} efficiency.`;
+  seasonLatestWeek.textContent = `${latest.week}: ${latest.confidence_points}/${latest.max_points} points · ${format(latest.points_percent)}`;
 }
 
 const betting = data.betting || { metrics: [], weekly: [] };
@@ -109,4 +176,5 @@ if (!betting.weekly.length) {
     </svg>`;
 }
 
+animateBars();
 document.querySelector("#year").textContent = new Date().getFullYear();
