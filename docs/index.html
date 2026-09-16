@@ -22,6 +22,7 @@
         <div class="nav-links">
           <a href="#results">Results</a>
           <a href="#picks">Picks</a>
+          <a href="#season">Season</a>
           <a href="#betting">Paper bets</a>
           <a href="#method">Method</a>
         </div>
@@ -45,7 +46,7 @@
 
       <section class="ticker" aria-label="Project highlights">
         <div class="ticker-track">
-          <span>NO HOT TAKES</span><b>◆</b><span>WALK-FORWARD TESTED</span><b>◆</b><span>MARKET BENCHMARKED</span><b>◆</b><span>CONFIDENCE OPTIMISED</span><b>◆</b><span>NO HOT TAKES</span><b>◆</b><span>WALK-FORWARD TESTED</span>
+          <span>NO HOT TAKES</span><b>◆</b><span>WALK-FORWARD TESTED</span><b>◆</b><span>MARKET BENCHMARKED</span><b>◆</b><span>CONFIDENCE OPTIMISED</span><b>◆</b><span>LIVE SEASON TRACKED</span><b>◆</b><span>NO HOT TAKES</span>
         </div>
       </section>
 
@@ -68,10 +69,10 @@
           <article class="panel insight-panel">
             <div>
               <span class="overline">WHAT WE LEARNED</span>
-              <h3>Complexity hasn't earned the jersey. <em>Yet.</em></h3>
-              <p>The full walk-forward model trails the simple market baseline. A market-heavy ELO blend is the strongest lead, so the next job is testing which features add signal—and cutting everything that doesn't.</p>
+              <h3>The market still owns the starting job. <em>For now.</em></h3>
+              <p>Walk-forward and feature-ablation testing did not find a reliable confidence-pool improvement from ELO, recent margin or rest. The live 2026 card therefore keeps the no-vig market as its official baseline while new features are tested honestly.</p>
             </div>
-            <div class="next-test"><span>NEXT TEST</span><strong>Feature ablation</strong><b>→</b></div>
+            <div class="next-test"><span>LIVE TEST</span><strong>2026 season tracking</strong><b>→</b></div>
           </article>
         </div>
       </section>
@@ -96,9 +97,41 @@
         </div>
       </section>
 
+      <section id="season" class="section-wrap section-block">
+        <div class="section-heading">
+          <div><span class="kicker">03 / SEASON TRACKER</span><h2>Every week stays on the record.</h2></div>
+          <p>Live confidence-pool performance is stored permanently before the next card replaces the weekly output.</p>
+        </div>
+
+        <div class="week-toolbar" style="border-color: var(--line); border-bottom: 1px solid var(--line); background: var(--cream);">
+          <div><span class="overline">LIVE CONFIDENCE LEDGER</span><strong id="season-label">SEASON TRACKER</strong></div>
+          <span class="tag">STRAIGHT-UP</span>
+        </div>
+
+        <div class="betting-metric-grid" id="season-metrics" style="margin-top: 18px;"></div>
+
+        <div class="results-grid">
+          <article class="panel chart-panel">
+            <div class="panel-head">
+              <div><span class="overline">POINTS EFFICIENCY</span><h3>Week-by-week confidence score</h3></div>
+              <span class="tag">LIVE</span>
+            </div>
+            <div id="season-chart" class="bar-chart" style="height: auto; min-height: 300px; max-height: 520px; overflow-y: auto; padding-block: 20px;" role="img" aria-label="Weekly confidence points percentage chart"></div>
+          </article>
+          <article class="panel insight-panel">
+            <div>
+              <span class="overline">SEASON SNAPSHOT</span>
+              <h3>Backtests are over. <em>Now it counts.</em></h3>
+              <p id="season-summary-copy">The live ledger will track every straight-up pick, its assigned confidence weight and the points earned once the result is final.</p>
+            </div>
+            <div class="next-test"><span>LATEST SETTLED CARD</span><strong id="season-latest-week">No settled week yet</strong><b>→</b></div>
+          </article>
+        </div>
+      </section>
+
       <section id="betting" class="section-wrap section-block">
         <div class="section-heading">
-          <div><span class="kicker">03 / PAPER BANKROLL</span><h2>Every pick. Every price. No hiding.</h2></div>
+          <div><span class="kicker">04 / PAPER BANKROLL</span><h2>Every pick. Every price. No hiding.</h2></div>
           <p>A fixed-stake simulation that records the price available when the card is generated and settles against the actual result.</p>
         </div>
         <div class="betting-metric-grid" id="betting-metrics"></div>
@@ -106,7 +139,7 @@
           <article class="panel chart-panel">
             <div class="panel-head">
               <div><span class="overline">CUMULATIVE NET PROFIT</span><h3>Paper P/L over time</h3></div>
-              <span class="tag">$1,000 FLAT STAKE</span>
+              <span class="tag">FLAT STAKE SIMULATION</span>
             </div>
             <div id="profit-chart" class="profit-chart" role="img" aria-label="Cumulative paper betting profit chart"></div>
           </article>
@@ -121,7 +154,7 @@
 
       <section id="method" class="section-wrap section-block">
         <div class="section-heading">
-          <div><span class="kicker">04 / THE PLAYBOOK</span><h2>From market odds to one ranked card.</h2></div>
+          <div><span class="kicker">05 / THE PLAYBOOK</span><h2>From market odds to one ranked card.</h2></div>
           <p>The system is designed to be tested, explained and improved—not treated like a black box.</p>
         </div>
         <div class="steps" id="method-steps"></div>
