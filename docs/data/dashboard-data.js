@@ -234,6 +234,49 @@ window.FOURTH_AND_DATA = {
       "net_profit": 847.46
     }
   ],
+  "confidence_pool": {
+    "season": 2026,
+    "metrics": [
+      {
+        "label": "Weeks completed",
+        "value": 1,
+        "format": "integer",
+        "detail": "settled cards"
+      },
+      {
+        "label": "Pick accuracy",
+        "value": 78.57,
+        "format": "percent",
+        "detail": "11 of 14 correct"
+      },
+      {
+        "label": "Confidence points",
+        "value": 84,
+        "format": "integer",
+        "detail": "105 available"
+      },
+      {
+        "label": "Points percentage",
+        "value": 80.0,
+        "format": "percent",
+        "detail": "season efficiency"
+      }
+    ],
+    "weekly": [
+      {
+        "week": "2026 Week 1",
+        "week_number": 1,
+        "games": 14,
+        "correct_picks": 11,
+        "incorrect_picks": 3,
+        "ties": 0,
+        "confidence_points": 84,
+        "max_points": 105,
+        "accuracy_percent": 78.57,
+        "points_percent": 80.0
+      }
+    ]
+  },
   "betting": {
     "metrics": [
       {
