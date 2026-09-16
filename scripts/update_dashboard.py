@@ -37,6 +37,8 @@ def build_dashboard() -> dict:
     picks = read_csv("weekly_picks.csv")
     paper_bets = read_csv("paper_bets.csv")
     betting_weekly = read_csv("paper_betting_by_week.csv")
+    confidence_summaries = read_csv("confidence_pool_summary.csv")
+    confidence_weekly = read_csv("confidence_pool_by_week.csv")
 
     strategies = [
         {"name": row["strategy"], "points": number(row, "confidence_points")}
@@ -107,6 +109,40 @@ def build_dashboard() -> dict:
         for row in betting_weekly
     ]
 
+    latest_confidence = max(
+        confidence_summaries,
+        key=lambda row: number(row, "season"),
+        default={},
+    )
+    confidence_season = (
+        int(number(latest_confidence, "season"))
+        if latest_confidence
+        else None
+    )
+    rendered_confidence_weeks = [
+        {
+            "week": row.get("week", f"Week {int(number(row, 'week_number'))}"),
+            "week_number": int(number(row, "week_number")),
+            "games": int(number(row, "games")),
+            "correct_picks": int(number(row, "correct_picks")),
+            "incorrect_picks": int(number(row, "incorrect_picks")),
+            "ties": int(number(row, "ties")),
+            "confidence_points": int(number(row, "confidence_points")),
+            "max_points": int(number(row, "max_points")),
+            "accuracy_percent": number(row, "accuracy_percent"),
+            "points_percent": number(row, "points_percent"),
+        }
+        for row in confidence_weekly
+        if confidence_season is None
+        or int(number(row, "season")) == confidence_season
+    ]
+    rendered_confidence_weeks.sort(key=lambda row: row["week_number"])
+
+    confidence_games = int(number(latest_confidence, "games"))
+    confidence_correct = int(number(latest_confidence, "correct_picks"))
+    confidence_points = int(number(latest_confidence, "confidence_points"))
+    confidence_max = int(number(latest_confidence, "max_points"))
+
     return {
         "updated": date.today().isoformat(),
         "week": week,
@@ -117,6 +153,36 @@ def build_dashboard() -> dict:
         ],
         "strategies": strategies,
         "picks": rendered_picks,
+        "confidence_pool": {
+            "season": confidence_season,
+            "metrics": [
+                {
+                    "label": "Weeks completed",
+                    "value": int(number(latest_confidence, "weeks")),
+                    "format": "integer",
+                    "detail": "settled cards",
+                },
+                {
+                    "label": "Pick accuracy",
+                    "value": number(latest_confidence, "accuracy_percent"),
+                    "format": "percent",
+                    "detail": f"{confidence_correct} of {confidence_games} correct",
+                },
+                {
+                    "label": "Confidence points",
+                    "value": confidence_points,
+                    "format": "integer",
+                    "detail": f"{confidence_max} available",
+                },
+                {
+                    "label": "Points percentage",
+                    "value": number(latest_confidence, "points_percent"),
+                    "format": "percent",
+                    "detail": "season efficiency",
+                },
+            ],
+            "weekly": rendered_confidence_weeks,
+        },
         "betting": {
             "metrics": [
                 {
