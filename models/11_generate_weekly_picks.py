@@ -88,6 +88,11 @@ def generate_picks(
             f"No regular-season games were found for {season} Week {week}."
         )
 
+    # Confidence values are based on the full NFL week. If the pool excludes
+    # games that started before the deadline, those games consume the lowest
+    # values rather than renumbering the eligible card from 1.
+    full_week_game_count = games.height
+
     if first_game_team is not None:
         first_game = games.filter(
             (pl.col("home_team") == first_game_team)
@@ -172,14 +177,20 @@ def generate_picks(
         .alias("decimal_price")
     )
 
-    # Lowest win probability receives weight 1; highest receives weight N.
+    # Lowest eligible pick starts above the number of excluded games.
+    # Example: 16 total games with one Thursday game excluded produces
+    # confidence values 2 through 16 for the remaining 15 games.
+    excluded_game_count = full_week_game_count - games.height
+
     return (
         games
         .with_columns(
-            pl.col("pick_probability")
-            .rank(method="ordinal")
-            .cast(pl.Int32)
-            .alias("rank")
+            (
+                pl.col("pick_probability")
+                .rank(method="ordinal")
+                .cast(pl.Int32)
+                + pl.lit(excluded_game_count, dtype=pl.Int32)
+            ).alias("rank")
         )
         .select(
             pl.lit(season).alias("season"),
